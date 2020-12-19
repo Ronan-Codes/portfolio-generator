@@ -1,6 +1,15 @@
 const inquirer = require('inquirer');
-const fs = require('fs');
 const generatePage = require('./src/page-template.js');
+
+const { writeFile, copyFile } = require('./utils/generate-site');
+
+/* replaced by const {writeFile, copyFile} above
+const generateSite = require('./utils/generate-site');
+*/
+
+/* moved to generate-site.js above
+const fs = require('fs');
+*/
 
 //            const pageHTML = generatePage(name, github);
 
@@ -227,17 +236,54 @@ const mockData = {
 };
 */
 
-
-
-
+/* replaced by Promise call below
 promptUser()
     .then(promptProject)
     .then(portfolioData => {
         const pageHTML = generatePage(portfolioData);
 
-        fs.writeFile('./index.html', pageHTML, err => {
-          if (err) throw new Error(err);
+        fs.writeFile('./dist/index.html', pageHTML, err => {
+          if (err) {
+                throw new Error(err);
+          }
+          console.log('Page created! Check out index.html in this directory to see it!');
+
+          fs.copyFile('./src/style.css', './dist/style.css', err => {
+              if (err) {
+                  console.log(err);
+                  return;
+              }
+              console.log('Style sheet copied succesfully!');
+          });
+
         });
 
-         console.log('Page created! Check out index.html in this directory to see it!');
     });
+*/
+
+
+promptUser()
+    .then(promptProject)
+    .then(portfolioData => {
+        return generatePage(portfolioData);
+    })
+    .then(pageHTML => {
+        return writeFile(pageHTML);;
+    })
+    .then(writeFileResponse => {
+        console.log(writeFileResponse);
+        return copyFile();
+    })
+    .then(copyFileResponse => {
+        console.log(copyFileResponse);
+    })
+    .catch(err => {
+        console.log(err);
+    });
+
+
+
+/* Questions
+- throw new Error(err)?
+
+*/
